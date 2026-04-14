@@ -144,8 +144,15 @@ def query_deepseek(content, api_key):
 
             if thinking and MODEL_TYPE == "reasoner":
                 print(f"[Reasoner thought process]: {thinking}...")
+                #output thinking content to log under folder logs using filename YYYYMMDD
+                log_folder = os.path.join(WORKSPACE, "logs")
+                os.makedirs(log_folder, exist_ok=True)
+                log_file = os.path.join(log_folder, datetime.now().strftime("%Y%m%d") + ".log")
+                with open(log_file, "a", encoding="utf-8") as f:
+                    f.write(f"[Reasoner thought process]: {thinking}...\n")
 
             return content
+        
     except urllib.error.HTTPError as e:
         print(f"HTTP Error: {e.code} - {e.read().decode()}")
         return None
@@ -238,7 +245,7 @@ def main():
     with open(SI_FILE, "r", encoding="utf-8") as f:
         updated_content = f.read()
     
-    suggestion_response = query_deepsseek(updated_content, api_key)
+    suggestion_response = query_deepseek(updated_content, api_key)
     
     if not suggestion_response:
         print("Failed to get suggestion from DeepSeek")
